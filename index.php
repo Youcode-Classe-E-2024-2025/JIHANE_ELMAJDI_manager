@@ -29,9 +29,13 @@
             </form>
             <!-- Signup Form -->
             <form id="signupForm" class="input-group" style="display: none;">
+                <select name="role" id="role">
+                    <option value="">User</option>
+                    <option value="">Author</option>
+                </select>
+                <input type="text" class="input-field" placeholder="Your Name" required>
                 <input type="email" class="input-field" placeholder="Email Address" required>
                 <input type="password" class="input-field" placeholder="Password" required>
-                <input type="password" class="input-field" placeholder="Confirm Password" required>
                 <button type="submit" class="submit-btn">Signup</button>
             </form>
             <div class="signup-link">
