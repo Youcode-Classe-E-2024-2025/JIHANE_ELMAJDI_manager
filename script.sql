@@ -8,10 +8,11 @@ CREATE TABLE actors (
   name TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL,
-  status TEXT CHECK (status IN ('active', 'archived')) DEFAULT 'active',
+  status ENUM('active', 'archived') DEFAULT 'active',  
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
 
 CREATE TABLE roles (
   id INT AUTO_INCREMENT PRIMARY KEY,
