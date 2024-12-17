@@ -1,78 +1,74 @@
 -- Création de la base de données
-CREATE DATABASE bibliotheque;
+CREATE DATABASE IF NOT EXISTS Bibliothéque;
+USE Bibliothéque;
 
--- Utilisation de la base de données
-USE bibliotheque;
-
-CREATE TABLE auteurs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    prenom VARCHAR(100) NOT NULL,
-    bio TEXT
+-- Création des tables
+CREATE TABLE actors (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  status TEXT CHECK (status IN ('active', 'archived')) DEFAULT 'active',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-CREATE TABLE categories (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL
+
+CREATE TABLE roles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name TEXT UNIQUE NOT NULL
 );
-CREATE TABLE livres (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    titre VARCHAR(255) NOT NULL,
-    auteur_id INT,
-    annee_publication INT,
-    genre VARCHAR(100),
-    description TEXT,
-    FOREIGN KEY (auteur_id) REFERENCES auteurs(id)
+
+CREATE TABLE actor_roles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  actor_id INT NOT NULL,
+  role_id INT NOT NULL,
+  FOREIGN KEY (actor_id) REFERENCES actors (id) ON DELETE CASCADE,
+  FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE
 );
-CREATE TABLE utilisateurs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    mot_de_passe VARCHAR(255) NOT NULL
+
+CREATE TABLE books (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  isbn TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-CREATE TABLE emprunts (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    livre_id INT,
-    utilisateur_id INT,
-    date_emprunt DATE,
-    date_retour DATE,
-    FOREIGN KEY (livre_id) REFERENCES livres(id),
-    FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs(id)
+
+CREATE TABLE book_authors (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  book_id INT NOT NULL,
+  author_id INT NOT NULL,
+  FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE,
+  FOREIGN KEY (author_id) REFERENCES actors (id) ON DELETE CASCADE
 );
-INSERT INTO auteurs (nom, prenom, bio) 
-VALUES 
-('Tolkien', 'J.R.R.', 'Auteur de la trilogie du Seigneur des Anneaux'),
-('Rowling', 'J.K.', 'Auteur de la saga Harry Potter'),
-('Hugo', 'Victor', 'Auteur des Misérables');
+-- l'insertion des tableaux
 
-INSERT INTO categories (nom) 
-VALUES 
-('Fantasy'),
-('Science Fiction'),
-('Roman Historique');
+INSERT INTO actors (name, email, password, status) VALUES
+('Alice', 'alice@example.com', 'hashed_password1', 'active'),
+('Bob', 'bob@example.com', 'hashed_password2', 'active'),
+('Charlie', 'charlie@example.com', 'hashed_password3', 'archived'),
+('Diana', 'diana@example.com', 'hashed_password4', 'active');
 
-INSERT INTO livres (titre, auteur_id, annee_publication, genre, description) 
-VALUES 
-('Le Seigneur des Anneaux', 1, 1954, 'Fantasy', 'Une épopée de fantasy mythologique'),
-("Harry Potter à l'école des sorciers", 2, 1997, 'Fantasy', 'Le premier livre de la saga Harry Potter'),
-('Les Misérables', 3, 1862, 'Roman Historique', 'Un roman sur la justice sociale et les inégalités');
+INSERT INTO roles (name) VALUES
+('Admin'),
+('User'),
+('Author').
 
-INSERT INTO utilisateurs (nom, email, mot_de_passe) 
-VALUES 
-('John Doe', 'johndoe@example.com', 'password123'),
-('Jane Smith', 'janesmith@example.com', 'password456');
+INSERT INTO actor_roles (actor_id, role_id) VALUES
+(1, 1), -- Alice est Admin
+(1, 2), -- Alice est aussi User
+(2, 2), -- Bob est User
+(3, 3), -- Charlie est Author
 
-INSERT INTO emprunts (livre_id, utilisateur_id, date_emprunt, date_retour) 
-VALUES 
-(1, 1, '2024-12-01', '2024-12-15'),
-(2, 2, '2024-12-05', '2024-12-20');
+INSERT INTO books (title, description, isbn) VALUES
+('Les Misérables', 'Roman de Victor Hugo', '978-2-0707-0174-0'),
+('Le Petit Prince', 'Roman de Saint-Exupéry', '978-2-0704-0501-0'),
+('1984', 'Roman de George Orwell', '978-0-4522-8416-0'),
+('L’Étranger', 'Roman d’Albert Camus', '978-0-1411-8813-2');
 
--- Vérification des tableaux
-SELECT * FROM auteurs;
-
-SELECT * FROM categories;
-
-SELECT * FROM livres;
-
-SELECT * FROM utilisateurs;
-
-SELECT * FROM emprunts;
+INSERT INTO book_authors (book_id, author_id) VALUES
+(1, 3), -- Charlie est l'auteur de "Les Misérables"
+(2, 4), -- Diana est l'auteur de "Le Petit Prince"
+(3, 3), -- Charlie est aussi l'auteur de "1984"
+(4, 2); -- Bob est l'auteur de "L’Étranger"
